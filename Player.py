@@ -208,7 +208,82 @@ class SpaceShip(SphereCollideObject):
     def enbleHUD(self):
         self.Hud = OnscreenImage(image = "./Assets/Hud/crossHair.png")
 
-        self.Hud.setTransparency(TransparencyAttrib.MAlpha)        
+        self.Hud.setTransparency(TransparencyAttrib.MAlpha)   
+
+
+    def HandleInto(self, entry):
+        fromNode = entry.getFromNodePath().getName()
+        print("fromNode:" + fromNode)
+        intoNode = entry.getIntoNodePath().getName()
+        print("intoNode:" + intoNode)
+
+        intoPosition = Vec3(entry.getSurfacePoint(self.render))
+
+        shooter = tempVar [0]
+        tempVar = fromNode.split('_')
+        tempVar = intoNode.split('_')
+        tempVar = intoNode.split('_')
+        tempVar = intoNode.split('ship')
+        victim = tempVar [0] 
+
+        pattern = r'[0-9]' 
+        strippedString = re.sub(pattern, '', victim)
+
+        if (strippedString == "Drone"):
+            print(shooter + 'Is Gone') 
+            Missile.InterVals[shooter].finish()
+            print(victim, 'Hit At', intoPosition)
+            self.DroneDestroy(victim, intoPosition)
+
+            self.explode(intoPosition)
+
+        else:
+            Missile.InterVals[shooter].finish()
+
+
+    def Explode(self, impactPoint):
+        self.cntExplode += 1 
+        tag = "particles" + str(self.cntExplode)
+
+        self.explodeIntervals[tag] = LerpFunc(self.ExplodeLight, fromData = 0, toData = 1, duration = 5.0, extraArgs = [impactPoint])
+        self.explodeIntervals[tag].start()
+
+    def ExplodeLight(self, t, explosionPosition):
+        self.SetParticles()
+
+        if t == 1.3 and self.explodeEffect:
+            self.explodeEffect.disable()
+
+        elif t == 0:
+            self.explodeEffect.start(self.explodeNode)
+
+    def DroneDestroy(self, hitID, hitposition):
+        nodeID = self.render.find(hitID)
+        nodeID.detachNode()
+
+        self.explodeNode += 1
+        self.Explode(hitposition)
+
+    def SetParticles(self):
+        base.enableParticles()
+        self.expldeEffect = ParticleEffect()
+        self.explodeEffect.loadConfig("./Assets/particlefx/SP21-explosionIII.ptf")
+        self.explodeEffect.setScale(25)
+        self.expodeNode = self.render.attachNewNode("ExplosionEffects") 
+
+    def Reload(self, task):
+        if task.time > self.reloadTime:
+            self.missleBay += 1
+            if self.missleBay > 1:
+                self.missleBay = 1
+            print("Reloading Complete.")
+            return Task.done
+
+        elif task.time <= self.reloadTime:
+            print("Reload Proceeding..")
+
+            return Task.cont                                  
+
 
 
 class Missile(SphereCollideObject):
