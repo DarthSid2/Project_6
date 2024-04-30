@@ -1,9 +1,16 @@
 from direct.showbase.ShowBase import ShowBase
 from panda3d.core import *
-import DroneDefencePath as DroneDefencePath
-import SpaceJamClass as spaceJamClass
+from direct.task import *
+from collideObjectBase import *
+from collideObjectBase import SphereCollideObject
 from panda3d.core import CollisionTraverser, CollisionHandlerPusher
-from collideObjectBase import PlacedObject  
+from collideObjectBase import PlacedObject 
+
+
+import SpaceJamClass as spaceJamClass 
+import DroneDefencePath as DroneDefencePath
+import math
+import collideObjectBase as collideObjectBase
 
 
 
@@ -17,13 +24,12 @@ class SpaceJam(ShowBase):
     
     def __init__(self):
         ShowBase.__init__(self)
-        self.sceneSetup()
         self.cTrav = CollisionTraverser()
         self.cTrav.traverse(self.render)
         self.pusher = CollisionHandlerPusher()
         self.cTrav.showCollisions(self.render)
-        self.pusher.addCollider(self.ship1.collisionNode, self.ship1.modelNode)
-        self.cTrav.addCollider(self.ship1.collisionNode, self.pusher)
+        self.pusher.addCollider(self.Ship1.collisionNode, self.Ship1.modelNode)
+        self.cTrav.addCollider(self.Ship1.collisionNode, self.pusher)
        
     def DrawCloudDefense(self, centralObject, droneName): 
         unitVec = DroneDefencePath.Cloud()
@@ -138,7 +144,7 @@ class SpaceJam(ShowBase):
             spaceJamClass.Drone.droneCount += 1
             nickName = "Drone" + str(spaceJamClass.Drone.droneCount)
             self.DrawCloudDefense(self.Planet1, nickName)
-            self.DrawBaseBallSeams(self.Planet2, nickName, j , fullCycle)
+            self.DrawBaseBallSeams(self.Station1, nickName, j , fullCycle)
             self.DrawCircleXZ(self.Planet3, nickName)
             self.DrawCircleXY(self.Planet4, nickName)
             self.DrawCircleYZ(self.Planet5, nickName)
@@ -153,5 +159,4 @@ class SpaceJam(ShowBase):
 
 
 app = SpaceJam()
-app.SetupScene()
 app.run()

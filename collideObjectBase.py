@@ -20,6 +20,7 @@ class SphereCollideObject(CollidableObject):
     def __init__(self, loader: Loader, modelPath: str, parentNode: NodePath, nodeName: str, colPositionVec: Vec3, colRadius: float):
         super(SphereCollideObject, self).__init__(loader, modelPath, parentNode, nodeName)
         self.collisionNode.node().addSolid(CollisionSphere(colPositionVec, colRadius))
+        self.collisionNode.show()
     
 
 class InverseSphereCollideObject(CollidableObject):
